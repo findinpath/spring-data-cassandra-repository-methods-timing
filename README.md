@@ -2,7 +2,8 @@ Time the duration of methods belonging to spring data cassandra repositories
 ============================================================================
 
 This project showcases how to make use of Spring AOP / AspectJ for timing the
-duration of methods belonging to spring data cassandra repositories.
+duration of methods belonging to 
+[spring data cassandra](https://spring.io/projects/spring-data-cassandra) repositories.
 
 ## Metrics in the data access layer of the application
 
@@ -11,21 +12,24 @@ exposed by the _Data Access Layer_ performs is a tremendous improvement
 for monitoring and tackling production issues on a live application.
 
 To give a pretty common example, say that with a new release of the application 
-one `SELECT` statement related from a repository class gets changed that causes the
+one `SELECT` statement from a repository class gets changed that causes the
 application to run normal on the testing environment, but on the productive environment
 where there's much more data to perform much worse than it did before.
 In that case after the release, the [Quality of Service](https://en.wikipedia.org/wiki/Quality_of_service)
 will drop to a significant amount, and the engineer responsible for the release
 will need to investigate what has changed for the worse since the last release.
+
 This is where nowadays metric collector services (like [Prometheus](https://prometheus.io/))
 shine and provide a lot of meaningful answers in such situations.
 It would obviously be very helpful to see in [Grafana](https://grafana.com/) 
 or even receive a [Prometheus alert](https://prometheus.io/docs/practices/alerting/)
 whether an operation or a set of operations performed by the application performs
 much more slowly than before.
-So, seeing a continuous spike or repeated failures on the data access layer for a
+
+Seeing a continuous spike or repeated failures on the data access layer for a
 certain operation from a repository in the data access layer of the application
-would help to identify very fast the problem and revert the change/fix the problem.
+since the last release would help to identify very fast 
+the problem and subsequently revert the change or fix the problem.
 
 
 ## Timing the methods of spring data repositories
@@ -34,12 +38,15 @@ When using the `io.micrometer.core.annotation.Timed` annotation that comes
 with [micrometer](https://micrometer.io/) library in a 
 [spring-boot](https://spring.io/projects/spring-boot) application
 there is obtained the emission of timing metrics for the methods annotated
-with this annotation ( when annotating the class, all the public methods 
-of the class are timed). 
+with this annotation.
+
+When annotating the class with the `@Timed` annotation, all the public methods 
+of the spring bean class will be timed. 
 
 This seems like a good solution, but very often it happens that through 
 omission/refactoring in the code, the annotation is being removed by mistake
-from the class and therefore the metrics and not emitted anymore.
+from the class and therefore the valuable metrics and not emitted anymore
+to the micrometer's `MeterRegistry`.
  
 Another drawback of the `io.micrometer.core.annotation.Timed` annotation
 (and the `io.micrometer.core.aop.TimedAspect` which takes care of intercepting
@@ -51,8 +58,8 @@ Through [spring data cassandra](https://spring.io/projects/spring-data-cassandra
 - `org.springframework.data.cassandra.core.CassandraTemplate`
 - `org.springframework.data.cassandra.core.AsyncCassandraTemplate`
 
-there can be executed in both fashions, synchronous and asynchronous,
-statements on the Cassandra database.
+there can be executed statements on the Cassandra database in both fashions, 
+synchronous and asynchronous.
 
 This project developed a custom [AspectJ](https://en.wikipedia.org/wiki/AspectJ) class
 for taking care of timing all the public methods exposed by the spring data repository bean
@@ -65,7 +72,7 @@ Spring data repository classes are considered any of the following:
   
   
 In a similar fashion to the  micrometer's AspectJ `io.micrometer.core.aop.TimedAspect`, the
-AspectJ `com.findinpath.aop.RepositoryTimerAspect` from this proof of concept project intercepts
+AspectJ `com.findinpath.aop.RepositoryTimerAspect` class from this proof of concept project intercepts
 the methods of spring data repository beans from the project and emits timer information
 to micrometer's `io.micrometer.core.instrument.MeterRegistry`.
 
@@ -115,8 +122,9 @@ failure cases after the completion of the method:
 
 ## Spring AOP
 
-In case that it is needed a Spring AOP implementation for timing the spring data repositories
-in the project, the project source code provides also such an implementation, although commented,
+In case that it is needed for reference a Spring AOP implementation 
+for timing the spring data repositories, 
+the project source code provides also such an implementation, although commented,
 in order to avoid causing issues with the `AspectJ` `RepositoryTimerAspect.
 
 See `com.findinpath.config.RepositoryTimerConfiguration` for details.

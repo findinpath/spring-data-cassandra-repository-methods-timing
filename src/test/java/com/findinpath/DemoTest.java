@@ -8,7 +8,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.datastax.driver.core.utils.UUIDs;
-import com.findinpath.config.RepositoryTimerConfiguration;
+import com.findinpath.aop.RepositoryTimerAspect;
 import com.findinpath.model.Config;
 import com.findinpath.model.UserBookmark;
 import com.findinpath.model.UserBookmarkKey;
@@ -168,7 +168,7 @@ public class DemoTest {
   private static void checkTimerValidity(List<Meter> meters, String className, String methodName,
       long expectedCount) {
     var saveTimer = getExactlyOneTimer(meters,
-        RepositoryTimerConfiguration.REPOSITORY_METRIC_NAME,
+        RepositoryTimerAspect.REPOSITORY_METRIC_NAME,
         Tag.of("class", className),
         Tag.of("method", methodName)
     );
